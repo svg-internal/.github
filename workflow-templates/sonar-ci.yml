@@ -39,5 +39,6 @@ jobs:
           COMMIT_BRANCH: ${{ github.ref_name }}
           COMMIT_REPO: ${{ github.repository }}
           COMMIT_USER: ${{ github.actor }}
-          #JAVA_RUNTIME should be have a value of corretto<version>, ie, corretto17.
-          JAVA_RUNTIME: <JAVA_RUNTIME_VALUE>
+          #For migrated projects, JAVA_RUNTIME will be set via an Action Repository variable set on the repository.
+          #For new projects, set with a value of corretto<version>, ie, corretto17.
+          JAVA_RUNTIME: ${{ vars.java_runtime }}
