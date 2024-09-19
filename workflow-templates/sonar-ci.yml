@@ -39,5 +39,5 @@ jobs:
           COMMIT_BRANCH: ${{ github.ref_name }}
           COMMIT_REPO: ${{ github.repository }}
           COMMIT_USER: ${{ github.actor }}
-          #set JAVA_RUNTIME with a value of corretto<version>, ie, corretto17.
-          JAVA_RUNTIME: <JAVA_RUNTIME>
+          #set JAVA_RUNTIME with a value of corretto<version>, ie, corretto8.
+          JAVA_RUNTIME: 'corretto8'
