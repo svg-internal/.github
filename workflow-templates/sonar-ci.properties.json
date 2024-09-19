@@ -1,4 +1,4 @@
 {
     "name": "SVG Internal Sonar CI Workflow",
-    "description": "SVG Sonar CI workflow template."
+    "description": "SVG Sonar CI workflow template.  Calls sonar-ci codebuild"
 }
