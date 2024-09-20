@@ -22,7 +22,8 @@ jobs:
       - name: Run ECS Image Build CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: dx-build-trigger-image-build
+          project-name: ${{ env.APPLICATION_NAME }}-ecs-image-build
+          artifacts-type-override: NO_ARTIFACTS
           env-vars-for-codebuild: |
             COMMIT_HASH,
             COMMIT_BRANCH,
