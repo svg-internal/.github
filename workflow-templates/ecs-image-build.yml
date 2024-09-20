@@ -41,7 +41,8 @@ jobs:
           COMMIT_BRANCH: ${{ github.ref_name }}
           COMMIT_REPO: ${{ github.repository }}
           COMMIT_USER: ${{ github.actor }}
-          APPLICATION_NAME: ${{ github.repository }}
+          APPLICATION_NAME: <APPLICATIONNAME>
+          
           # RUNTIME - The AWS CodeBuild docker image to use. This affects what runtimes you may select.
           #   Please consult the runtime version compatibility matrix before makinga selection:
           #   https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html
