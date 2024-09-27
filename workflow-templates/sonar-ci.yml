@@ -1,0 +1,44 @@
+name: Sonar CI
+
+on:
+  push:
+    branches: 
+      - 'master'
+      - 'dev[0-9].*'
+      - 'feature/**'
+      - 'feature-*'
+      - 'release'
+      - 'main'
+
+permissions:
+  id-token: write   # This is required for requesting the JWT token
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-west-2
+          # ADD AWS ACCOUNT ID. This is the account that the role is in.
+          role-to-assume: arn:aws:iam::<AWS_ACCOUNT_ID>:role/svg-internal-github-oidc-role
+      - name: Run sonar-ci CodeBuild
+        uses: aws-actions/aws-codebuild-run-build@v1
+        with:
+          project-name: sonar-ci-stack-buildenvironment
+          env-vars-for-codebuild: |
+            COMMIT_HASH,
+            COMMIT_BRANCH,
+            COMMIT_REPO,
+            COMMIT_USER,
+            JAVA_RUNTIME   
+        env:
+          COMMIT_HASH: ${{ github.sha }}
+          COMMIT_BRANCH: ${{ github.ref_name }}
+          COMMIT_REPO: ${{ github.repository }}
+          COMMIT_USER: ${{ github.actor }}
+          #set JAVA_RUNTIME with a value of corretto<version>, ie, corretto8.
+          JAVA_RUNTIME: 'corretto8'
