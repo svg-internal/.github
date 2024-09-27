@@ -18,11 +18,12 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-west-2
-          role-to-assume: arn:aws:iam::059157508967:role/svg-internal-github-oidc-role
+          # Fill in Production AWS_ACCOUNT_ID 
+          role-to-assume: arn:aws:iam::<AWS_ACCOUNT_ID>:role/svg-internal-github-oidc-role
       - name: Run ECS Image Build CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: ${{ env.APPLICATION_NAME }}-ecs-image-build
+          project-name: ${{ env.APPLICATION_NAME }}-ecs-build
           artifacts-type-override: NO_ARTIFACTS
           env-vars-for-codebuild: |
             COMMIT_HASH,
