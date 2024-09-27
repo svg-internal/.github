@@ -18,8 +18,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-west-2
-          # Fill in Production AWS_ACCOUNT_ID 
-          role-to-assume: arn:aws:iam::<AWS_ACCOUNT_ID>:role/svg-internal-github-oidc-role
+          role-to-assume: arn:aws:iam::${{ vars.PROD_AWS_ACCOUNT_ID }}:role/svg-internal-github-oidc-role
       - name: Run ECS Image Build CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
