@@ -18,7 +18,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-west-2
-          role-to-assume: arn:aws:iam::059157508967:role/svg-internal-github-oidc-role
+          # ADD AWS ACCOUNT ID. This is the account that the role is in.
+          role-to-assume: arn:aws:iam::<AWS_ACCOUNT_ID>:role/svg-internal-github-oidc-role
       - name: Run 3tl CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
