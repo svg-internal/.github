@@ -1,0 +1,4 @@
+{
+    "name": "SVG Internal Stackhawk Scan Java",
+    "description": "Stackhawk DAST workflow template. Runs a Stackhawk scan on a Java application."
+}

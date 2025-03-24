@@ -1,0 +1,66 @@
+name: Stackhawk DAST Python
+
+on:
+  pull_request:
+    branches: 
+      - 'dev01'
+  # pull_request:
+  #   types: [opened, assigned, unassigned ]
+
+permissions:
+  id-token: write   # This is required for requesting the JWT token
+  contents: read
+
+jobs:
+  build-image:
+    runs-on:
+      - codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: get repo
+        uses: actions/checkout@v4
+      - name: set up java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+      - name: get ecr creds
+        run: aws ecr get-login-password  | docker login -u AWS --password-stdin https://059157508967.dkr.ecr.us-west-2.amazonaws.com
+      - name: docker build
+        run: docker build . -t my-app
+      - name: docker run
+        run: >
+          docker run -d --rm
+          --name my-app
+          --network host 
+          -e AWS_DEFAULT_REGION
+          -e AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+          -e Environment=dev01
+          my-app
+      - name: check app running
+        run: while ! curl -kIs https://localhost:8080/health | grep 200; do sleep 10; echo waiting...; done
+      - name: Run HawkScan
+        id: hawkscan
+        uses: stackhawk/hawkscan-action@v2
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+        env:
+          # Use GitHub Actions workflow variables to populate these environment variables
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          BRANCH_NAME: ${{ github.head_ref }}
+
+  close-pr-on-failure:
+      runs-on: codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
+      permissions:
+        contents: read
+        pull-requests: write
+      needs: build-image
+      if: failure() && github.event_name == 'pull_request'
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Close PR on Failure
+          run: gh pr close "${{ github.event.pull_request.number }}" --comment "This pull request was automatically closed because the Stackhawk scan"
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
