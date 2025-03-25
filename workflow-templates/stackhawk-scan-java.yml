@@ -3,7 +3,7 @@ name: Stackhawk DAST Java
 on:
   pull_request:
     branches: 
-      - 'main'
+      - <TRIGGER_BRANCH>
   # pull_request:
   #   types: [opened, assigned, unassigned ]
 
@@ -28,16 +28,16 @@ jobs:
       - name: Run the Maven Clean install
         run: mvn install -q
       - name: Image build
-        run: docker build -t my-app .
+        run: docker build -t <IMAGE_NAME> .
       - name: docker run
         run: >
           docker run -d -p 8080:8080
           --rm
-          --name my-app
+          --name <CONTAINER_NAME>
           -e AWS_DEFAULT_REGION
           -e AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
           -e Environment=dev01
-          my-app
+           <IMAGE_NAME>
       - name: Adding delay
         run: sleep 10   
       - name: check app running
@@ -48,7 +48,6 @@ jobs:
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
         env:
-          # Use GitHub Actions workflow variables to populate these environment variables
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           BRANCH_NAME: ${{ github.head_ref }}
 
@@ -65,6 +64,6 @@ jobs:
           uses: actions/checkout@v4
 
         - name: Close PR on Failure
-          run: gh pr close "${{ github.event.pull_request.number }}" --comment "This pull request was automatically closed because the Stackhawk scan"
+          run: gh pr close "${{ github.event.pull_request.number }}" --comment "This pull request was automatically closed because the Stackhawk scan found vulnerabilities"
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

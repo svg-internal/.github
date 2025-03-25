@@ -1,4 +1,0 @@
-{
-    "name": "SVG Internal Stackhawk Scan Python",
-    "description": "Stackhawk DAST workflow template. Runs a Stackhawk scan on a Python application."
-}
