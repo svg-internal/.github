@@ -31,7 +31,7 @@ jobs:
         run: docker build -t my-app .
       - name: docker run
         run: >
-          docker run -d -p 443:8080
+          docker run -d -p 8080:8080
           --rm
           --name my-app
           -e AWS_DEFAULT_REGION
@@ -41,7 +41,7 @@ jobs:
       - name: Adding delay
         run: sleep 10   
       - name: check app running
-        run: while ! curl -kIs https://localhost/hello | grep 200; do sleep 10; echo waiting...; done
+        run: while ! curl -kIs https://localhost:8080/hello | grep 200; do sleep 10; echo waiting...; done
       - name: Run HawkScan
         id: hawkscan
         uses: stackhawk/hawkscan-action@v2
