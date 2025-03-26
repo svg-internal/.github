@@ -25,19 +25,19 @@ jobs:
           java-version: '17'
       - name: get ecr creds
         run: aws ecr get-login-password  | docker login -u AWS --password-stdin https://059157508967.dkr.ecr.us-west-2.amazonaws.com
-      - name: Run the Maven Clean install
+      - name: Run the Maven install
         run: mvn install -q
       - name: Image build
-        run: docker build -t <IMAGE_NAME> .
+        run: docker build -t java-app .
       - name: docker run
         run: >
           docker run -d -p 8080:8080
           --rm
-          --name <CONTAINER_NAME>
+          --name java-container
           -e AWS_DEFAULT_REGION
           -e AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
           -e Environment=dev01
-           <IMAGE_NAME>
+          java-app
       - name: Adding delay
         run: sleep 10   
       - name: check app running
