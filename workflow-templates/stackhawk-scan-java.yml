@@ -11,6 +11,9 @@ permissions:
   id-token: write   # This is required for requesting the JWT token
   contents: read
 
+env:
+  APP_HEALTH_CHECK_URL: https://localhost:8080/health
+
 jobs:
   build-image:
     runs-on:
@@ -41,7 +44,7 @@ jobs:
       - name: Adding delay
         run: sleep 10   
       - name: check app running
-        run: while ! curl -kIs https://localhost:8080/hello | grep 200; do sleep 10; echo waiting...; done
+        run: for i in {1..5}; do curl -kIs $APP_HEALTH_CHECK_URL | grep 200 && exit 0 || sleep 10; done; exit 1
       - name: Run HawkScan
         id: hawkscan
         uses: stackhawk/hawkscan-action@v2
@@ -50,20 +53,3 @@ jobs:
         env:
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           BRANCH_NAME: ${{ github.head_ref }}
-
-  close-pr-on-failure:
-      runs-on: codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
-      permissions:
-        contents: read
-        pull-requests: write
-      needs: build-image
-      if: failure() && github.event_name == 'pull_request'
-
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
-
-        - name: Close PR on Failure
-          run: gh pr close "${{ github.event.pull_request.number }}" --comment "This pull request was automatically closed because the Stackhawk scan found vulnerabilities"
-          env:
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
