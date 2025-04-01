@@ -1,0 +1,45 @@
+name: Snyk-Container-Monitor        
+
+on:
+  pull_request:
+    branches: 
+      - 'dev01'
+
+permissions:
+  id-token: write   
+  contents: read
+
+jobs:
+  snyk-container-scan:
+    runs-on:
+      - codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: get repo
+        uses: actions/checkout@v4 
+      - name: get ecr creds
+        run: aws ecr get-login-password  | docker login -u AWS --password-stdin https://059157508967.dkr.ecr.us-west-2.amazonaws.com
+      - name: docker build
+        run: docker build . -t test-app
+      - name: Snyk scan for showing results on Gh Workflow 
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: test-app
+          args: "--file=Dockerfile --severity-threshold=high"
+      - name: Snyk Monitor to send logs to Snyk
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: test-app
+          args: "--file=Dockerfile --severity-threshold=high"
+          command: monitor
+        
+  trigger-stackhawk:
+    needs: snyk-container-scan
+    uses: ./.github/workflows/stackhawk-dast.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      pull-requests: write
