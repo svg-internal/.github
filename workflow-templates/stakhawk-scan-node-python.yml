@@ -1,4 +1,4 @@
-name: Stackhawk DAST Node/Python
+name: Stackhawk DAST
 
 on:
   workflow_call:

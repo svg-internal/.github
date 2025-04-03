@@ -1,15 +1,10 @@
-name: Stackhawk DAST Java
+name: Stackhawk DAST
 
 on:
-  pull_request:
-    branches: 
-      - <TRIGGER_BRANCH>
-  # pull_request:
-  #   types: [opened, assigned, unassigned ]
-
-permissions:
-  id-token: write   # This is required for requesting the JWT token
-  contents: read
+  workflow_call:
+    secrets:
+      HAWK_API_KEY:
+        required: true
 
 env:
   APP_HEALTH_CHECK_URL: https://localhost:8080/health
@@ -37,6 +32,7 @@ jobs:
           docker run -d -p 8080:8080
           --rm
           --name java-container
+          --network host
           -e AWS_DEFAULT_REGION
           -e AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
           -e Environment=dev01

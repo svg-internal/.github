@@ -27,7 +27,7 @@ jobs:
         with:
           image: test-app
           args: "--file=Dockerfile --severity-threshold=high"
-      - name: Snyk Monitor to send logs to Snyk
+      - name: Snyk Monitor to send logs to Snyk UI
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
