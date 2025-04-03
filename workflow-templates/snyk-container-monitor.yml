@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: 
       - 'dev01'
+env:
+  APP_NAME: test-app
 
 permissions:
   id-token: write   
@@ -19,20 +21,20 @@ jobs:
       - name: get ecr creds
         run: aws ecr get-login-password  | docker login -u AWS --password-stdin https://059157508967.dkr.ecr.us-west-2.amazonaws.com
       - name: docker build
-        run: docker build . -t test-app
+        run: docker build . -t $APP_NAME
       - name: Snyk scan for showing results on Gh Workflow 
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: test-app
+          image: $APP_NAME
           args: "--file=Dockerfile --severity-threshold=high"
       - name: Snyk Monitor to send logs to Snyk UI
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: test-app
+          image: $APP_NAME
           args: "--file=Dockerfile --severity-threshold=high"
           command: monitor
         
