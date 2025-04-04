@@ -6,6 +6,7 @@ on:
       - <TARGET_BRANCH> # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
 env:
   APP_NAME: test-app
+  ORG_ID: <ORG-ID> #Replace with your Snyk organization ID
 
 permissions:
   id-token: write   
@@ -35,7 +36,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: $APP_NAME
-          args: "--file=Dockerfile --severity-threshold=high"
+          args: "--file=Dockerfile --severity-threshold=high --org=$ORG_ID"
           command: monitor
         
   trigger-stackhawk:
