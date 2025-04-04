@@ -1,4 +1,4 @@
-name: Stackhawk DAST
+name: Stackhawk-DAST-Java
 
 on:
   workflow_call:
@@ -7,9 +7,9 @@ on:
         required: true
 
 env:
-  APP_HEALTH_CHECK_URL: https://localhost:8080/health
-  APP_NAME: java-app
-  CONTAINER_NAME: java-container
+  APP_HEALTH_CHECK_URL: https://localhost:8080/health # Replace with your application's health check URL
+  APP_NAME: java-app                                  # Replace with your application name          
+  CONTAINER_NAME: java-container                      # Replace with your container name
 
 jobs:
   build-image:
@@ -28,7 +28,7 @@ jobs:
       - name: Run the Maven install
         run: mvn install -q
       - name: Image build
-        run: docker build -t java-app .
+        run: docker build -t $APP_NAME .
       - name: docker run
         run: >
           docker run -d -p 8080:8080
@@ -50,7 +50,7 @@ jobs:
               sleep 10
             fi
           done
-          docker logs java-container
+          docker logs $CONTAINER_NAME
           exit 1
       - name: Run HawkScan
         id: hawkscan
