@@ -1,0 +1,34 @@
+name: Snyk-lambda-scan-java       
+
+on:
+  pull_request:
+    branches: 
+      - <TARGET_BRANCH> 
+
+env:
+  TEMPLATE_FILE: template.yml  # Specify your AWS SAM template file
+
+permissions:
+  id-token: write   
+  contents: read
+
+jobs:
+  snyk_scan:
+    runs-on: codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run Snyk Code Security Scan
+        uses: snyk/actions/maven@master 
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} 
+        with:
+          args: --severity-threshold=high
+          command: monitor
+      - name: Run Snyk IaC Scan for AWS SAM Templates
+        uses: snyk/actions/iac@master  
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          file: $TEMPLATE_FILE  # Use the environment variable for the template file
+          args: --report
