@@ -40,7 +40,7 @@ jobs:
         
   trigger-stackhawk:
     needs: snyk-container-scan
-    uses: ./.github/workflows/<STACKHAWK_SCAN_WORKFLOW_YAML_FILE>  #Replace STACKHAWK_SCAN_WORKFLOW_YAML_FILE with the name of stackahwk workflow file that you choosed for a runtime.
+    uses: ./.github/workflows/<STACKHAWK_SCAN_WORKFLOW_YAML_FILE>  #Replace STACKHAWK_SCAN_WORKFLOW_YAML_FILE with the name of stackahwk workflow file that you choosed for a runtime e.g "stackhawk-scan-java.yml".
     secrets: inherit
     permissions:
       contents: read
