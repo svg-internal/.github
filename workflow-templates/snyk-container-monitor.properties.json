@@ -1,4 +1,4 @@
 {
-    "name": "SVG Internal Container Monitor/Scan Workflow",
-    "description": "SVG Container Monitor/Scan workflow template."
+    "name": "SVG Internal Snyk Container Monitor/Scan",
+    "description": "SVG Snyk Container Monitor/Scan template."
 }

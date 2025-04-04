@@ -1,9 +1,9 @@
-name: Snyk-Container-Monitor        
+name: Snyk-Container-Monitor-Scan     
 
 on:
   pull_request:
     branches: 
-      - 'dev01'
+      - <TARGET_BRANCH> # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
 env:
   APP_NAME: test-app
 
@@ -40,7 +40,7 @@ jobs:
         
   trigger-stackhawk:
     needs: snyk-container-scan
-    uses: ./.github/workflows/stackhawk-dast.yml
+    uses: ./.github/workflows/<STACKHAWK_SCAN_WORKFLOW_YAML_FILE>  #Replace STACKHAWK_SCAN_WORKFLOW_YAML_FILE with the name of stackahwk workflow file that you choosed for a runtime.
     secrets: inherit
     permissions:
       contents: read

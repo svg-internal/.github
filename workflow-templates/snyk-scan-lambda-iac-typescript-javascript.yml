@@ -1,4 +1,4 @@
-name: Snyk-lambda-scan-python       
+name: Snyk-lambda-scan-typescript/javascript       
 
 on:
   pull_request:

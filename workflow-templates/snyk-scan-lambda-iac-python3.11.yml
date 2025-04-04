@@ -1,4 +1,4 @@
-name: Snyk-lambda-scan-python3.11
+name: Snyk-lambda-scan-python-3.11
 
 on:
   pull_request:

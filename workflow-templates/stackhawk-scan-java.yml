@@ -8,6 +8,8 @@ on:
 
 env:
   APP_HEALTH_CHECK_URL: https://localhost:8080/health
+  APP_NAME: java-app
+  CONTAINER_NAME: java-container
 
 jobs:
   build-image:
@@ -31,12 +33,12 @@ jobs:
         run: >
           docker run -d -p 8080:8080
           --rm
-          --name java-container
+          --name $CONTAINER_NAME
           --network host
           -e AWS_DEFAULT_REGION
           -e AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
           -e Environment=dev01
-          java-app
+          $APP_NAME
       - name: Adding delay
         run: sleep 10   
       - name: check app running
