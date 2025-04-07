@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Get Domain and Store as Output
+      - name: Get Domain and Store as ENV
         run: |
           DOMAIN=$(aws codepipeline list-tags-for-resource \
             --resource-arn arn:aws:codepipeline:us-west-2:059157508967:${{github.event.repository.name}} | \
