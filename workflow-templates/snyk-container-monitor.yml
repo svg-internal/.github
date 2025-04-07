@@ -5,14 +5,14 @@ on:
     branches: 
       - <TARGET_BRANCH> # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
 env:
-  APP_NAME: test-app
+  APP_NAME: <IMAGE_NAME> # Replace with your application name
 
 permissions:
   id-token: write   
   contents: read
 
 jobs:
-  snyk-container-scan:
+  Snyk-container-scan:
     runs-on:
       - codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
@@ -45,7 +45,7 @@ jobs:
           args: --file=Dockerfile --severity-threshold=high --org=$ORG_ID
           command: monitor
         
-  trigger-stackhawk:
+  StackHawk-workflow-trigger:     # This job will trigger the stackhawk workflow if snyk scan is successful.
     needs: snyk-container-scan
     uses: ./.github/workflows/<STACKHAWK_SCAN_WORKFLOW_YAML_FILE>  #Replace STACKHAWK_SCAN_WORKFLOW_YAML_FILE with the name of stackahwk workflow file that you choosed for a runtime e.g "stackhawk-scan-java.yml".
     secrets: inherit

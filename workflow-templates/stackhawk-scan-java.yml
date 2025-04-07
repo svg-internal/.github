@@ -8,8 +8,8 @@ on:
 
 env:
   APP_HEALTH_CHECK_URL: https://localhost:8080/health # Replace with your application's health check URL
-  APP_NAME: java-app                                  # Replace with your application name          
-  CONTAINER_NAME: java-container                      # Replace with your container name
+  APP_NAME: <IMAGE_NAME>                                 # Replace with your application name          
+  CONTAINER_NAME: <CONTAINER_NAME>                     # Replace with your container name
 
 jobs:
   build-image:

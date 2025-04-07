@@ -6,7 +6,7 @@ on:
       - <TARGET_BRANCH>  # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
 
 env:
-  TEMPLATE_FILE: template.yml  # Specify your AWS SAM template file
+  TEMPLATE_FILE: <FILE_NAME>  # Specify your AWS SAM template file
 
 permissions:
   id-token: write   
