@@ -7,7 +7,6 @@ on:
 
 env:
   TEMPLATE_FILE: template.yml  # Specify your AWS SAM template file
-  ORG_ID: <ORG-ID> # Replace with your Snyk organization ID
 
 permissions:
   id-token: write   
@@ -19,6 +18,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Get Domain and Store as Output
+        run: |
+          DOMAIN=$(aws codepipeline list-tags-for-resource \
+            --resource-arn arn:aws:codepipeline:us-west-2:059157508967:${{github.event.repository.name}} | \
+            jq -r '.tags[]|select(.key == "domain").value')
+          echo "ORG_ID=svg-$DOMAIN" >> $GITHUB_ENV
       - name: Run Snyk Code Security Scan
         uses: snyk/actions/python-3.11@0b2e64710c3a479838f480718e781cc9a64f9bc6 
         env:

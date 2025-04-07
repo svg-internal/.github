@@ -6,7 +6,6 @@ on:
       - <TARGET_BRANCH> # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
 env:
   APP_NAME: test-app
-  ORG_ID: <ORG-ID> #Replace with your Snyk organization ID
 
 permissions:
   id-token: write   
@@ -17,26 +16,33 @@ jobs:
     runs-on:
       - codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
-      - name: get repo
+      - name: Checkout repository
         uses: actions/checkout@v4 
-      - name: get ecr creds
+      - name: Get ECR Credentials
         run: aws ecr get-login-password  | docker login -u AWS --password-stdin https://059157508967.dkr.ecr.us-west-2.amazonaws.com
-      - name: docker build
+      - name: Docker Build
         run: docker build . -t $APP_NAME
+      - name: Get Domain and Store as Output
+        run: |
+          DOMAIN=$(aws ecr list-tags-for-resource \
+            --resource-arn arn:aws:ecr:us-west-2:059157508967:repository/jason-timingtest | \
+            jq -r '.tags[]|select(.key == "domain").value')
+          echo "ORG_ID=svg-$DOMAIN" >> $GITHUB_ENV
       - name: Snyk scan for showing results on Gh Workflow 
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: $APP_NAME
-          args: "--file=Dockerfile --severity-threshold=high"
+          args: --file=Dockerfile --severity-threshold=high --org=$ORG_ID
       - name: Snyk Monitor to send logs to Snyk UI
+        if: always ()
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: $APP_NAME
-          args: "--file=Dockerfile --severity-threshold=high --org=$ORG_ID"
+          args: --file=Dockerfile --severity-threshold=high --org=$ORG_ID
           command: monitor
         
   trigger-stackhawk:
