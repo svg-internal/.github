@@ -12,7 +12,7 @@ env:
   CONTAINER_NAME: <CONTAINER_NAME>                     # Replace with your container name
 
 jobs:
-  build-image:
+  stackhawk-dast:
     runs-on:
       - codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
