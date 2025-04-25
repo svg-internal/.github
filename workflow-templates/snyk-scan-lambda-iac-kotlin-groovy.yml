@@ -1,0 +1,40 @@
+name: Snyk-lambda-scan-kotlin-groovy       
+
+on:
+  pull_request:
+    branches: 
+      - <TARGET_BRANCH>  # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
+
+env:
+  TEMPLATE_FILE: <FILE_NAME>  # Specify your AWS SAM template file
+
+permissions:
+  id-token: write   
+  contents: read
+
+jobs:
+  snyk_scan:
+    runs-on: codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Get Domain and Store as ENV
+        run: |
+          DOMAIN=$(aws codepipeline list-tags-for-resource \
+            --resource-arn arn:aws:codepipeline:us-west-2:059157508967:${{github.event.repository.name}} | \
+            jq -r '.tags[]|select(.key == "domain").value')
+          echo "ORG_ID=svg-$DOMAIN" >> $GITHUB_ENV
+      - name: Run Snyk Code Security Scan
+        uses: snyk/actions/gradle@master 
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} 
+        with:
+          args: --severity-threshold=high --org=$ORG_ID
+          command: monitor
+      - name: Run Snyk IaC Scan for AWS SAM Templates
+        uses: snyk/actions/iac@master  
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          file: $TEMPLATE_FILE  # Use the environment variable for the template file
+          args: --report --severity-threshold=high --org=$ORG_ID

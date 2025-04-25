@@ -1,0 +1,57 @@
+name: Stackhawk-DAST-Node-Python
+
+on:
+  workflow_call:
+    secrets:
+      HAWK_API_KEY:
+        required: true
+
+env:
+  APP_HEALTH_CHECK_URL: https://localhost:8080/health # Replace with your application's health check URL
+  APP_NAME: node-python-app                           # Replace with your application name
+  CONTAINER_NAME: node-python-container               # Replace with your container name
+
+jobs:
+  stackhawk-dast:
+    runs-on:
+      - codebuild-gh-runner-org-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: get repo
+        uses: actions/checkout@v4
+      - name: set up java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+      - name: get ecr creds
+        run: aws ecr get-login-password  | docker login -u AWS --password-stdin https://059157508967.dkr.ecr.us-west-2.amazonaws.com
+      - name: docker build
+        run: docker build . -t $APP_NAME
+      - name: docker run
+        run: >  
+          docker run -d --rm -p 8080:8080
+          --name $CONTAINER_NAME 
+          --network host 
+          -e AWS_DEFAULT_REGION
+          -e AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+          -e Environment=dev01
+          $APP_NAME 
+      - name: check app running
+        run: | 
+          for i in {1..5}; do 
+            if curl -kIs $APP_HEALTH_CHECK_URL | grep 200; then   
+              exit 0 
+            else
+              sleep 10
+            fi
+          done
+          docker logs $CONTAINER_NAME
+          exit 1
+      - name: Run HawkScan
+        id: hawkscan
+        uses: stackhawk/hawkscan-action@v2
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+        env:
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          BRANCH_NAME: ${{ github.head_ref }}
