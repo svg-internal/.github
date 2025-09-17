@@ -2,6 +2,7 @@ name: Snyk-Container-Monitor-Scan
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     branches: 
       - dev01 # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
 env:
