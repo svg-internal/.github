@@ -3,13 +3,14 @@ name: Snyk-Container-Monitor-Scan
 on:
   pull_request:
     branches: 
-      - <TARGET_BRANCH> # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
+      - dev01 # Replace <TARGET_BRANCH> with the branch you want to target, e.g., 'dev01' or 'main'
 env:
-  APP_NAME: <IMAGE_NAME> # Replace with your application name
+  APP_NAME: devops-hello-python # Replace with your application name
 
 permissions:
   id-token: write   
   contents: read
+  statuses: write
 
 jobs:
   Snyk-container-scan:
